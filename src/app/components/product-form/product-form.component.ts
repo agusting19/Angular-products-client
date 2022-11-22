@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Product } from 'src/app/interfaces/Product';
 import { ProductService } from 'src/app/services/product.service';
 
@@ -16,15 +16,41 @@ export class ProductFormComponent implements OnInit {
     imageURL: '',
   };
 
-  constructor(private productService: ProductService, private router: Router) {}
+  edit: boolean = false;
 
-  ngOnInit(): void {}
+  constructor(
+    private productService: ProductService,
+    private router: Router,
+    private activatedRoute: ActivatedRoute
+  ) {}
+
+  ngOnInit(): void {
+    const params = this.activatedRoute.snapshot.params;
+    if (params) {
+      this.productService.getProduct(params['id']).subscribe((res) => {
+        console.log(res);
+        this.product = res;
+        this.edit = true;
+      });
+    }
+  }
 
   submitProduct() {
     this.productService.createProduct(this.product).subscribe(
       (res) => {
         console.log(res);
         this.router.navigate(['/products']);
+      },
+      (error) => console.log(error)
+    );
+  }
+
+  updateProduct() {
+    delete this.product.createdAt;
+    this.productService.updateProduct(this.product._id!, this.product).subscribe(
+      (res) => {
+        console.log(res);
+        this.router.navigate(['/product']);
       },
       (error) => console.log(error)
     );
