@@ -16,10 +16,20 @@ export class ProductListComponent implements OnInit {
     this.getProducts();
   }
 
-  getProducts() {
+  getProducts(): void {
     this.productService.getProducts().subscribe(
       (res) => {
         this.products = res;
+      },
+      (err) => console.log(err)
+    );
+  }
+
+  deleteProduct(id: any): void {
+    this.productService.deleteProduct(id).subscribe(
+      (res) => {
+        console.log(res);
+        this.getProducts();
       },
       (err) => console.log(err)
     );
